@@ -4,17 +4,19 @@
 - 掌握 VirtualBox 的虚拟网络类型和按需配置；
 - 掌握 VirtualBox 的虚拟硬盘多重加载；
 ## 实验环境
-以下是本次实验需要使用的网络节点说明和主要软件举例：
+本次实验需要使用的网络节点说明：
 
 - VirtualBox 虚拟机
 - 攻击者主机（Attacker）：Kali Rolling (2021.1) x64
+    - Kali-Attacker
 - 网关（Gateway, GW）：Debian Buster
+    - Debian 10 - gateway
 - 靶机（Victim）：From Sqli to shell / xp-sp3 / Kali
+    - 局域网1内靶机：Kali-Victim1 / Windows XP-Victim1
+    - 局域网2内靶机：Debian10-Victim2 / Windows XP-Victim2
 
 ## 实验要求
-- 虚拟硬盘配置成多重加载，效果如下图所示；
-
-
+- 虚拟硬盘配置成多重加载;
 - 搭建满足如下拓扑图所示的虚拟机网络拓扑；
 ![](./img/vb-exp-layout.png)
 
@@ -61,11 +63,15 @@
 | Debian10-Victim2 | 172.16.222.102 | 08:00:27:02:8e:3c |
 | Windows XP-Victim2 | 172.16.222.147 | 08-00-27-2D-37-51 |
 #### 1.靶机可以直接访问攻击者主机
+> 网关使用了NAT模式。本实验中，靶机ping攻击者，ICMP Echo Request在经过网关时，网关会将src ip改为自己的外网IP。攻击者发回的ICMP Echo Reply在经过网关时，src ip又会被网关转换攻击者的IP，所以靶机看就是“能ping通攻击者”
+
 - 局域网1内靶机可直接访问攻击者主机
 ![](./img/vim1_2_atk.png)
 - 局域网2内靶机可直接访问攻击者主机
 ![](./img/vim2_2_atk.png)
 #### 2.攻击者主机无法直接访问靶机
+> 靶机在内部局域网中使用的是虚拟ip地址，即仅内部网络可用的地址，除本局域网以外的机器访问是无效的，因此，攻击者无法对其进行访问。
+
 - 攻击者无法直接访问局域网1内的靶机
 ![](./img/atk_2_vim1.png)
 - 攻击者无法直接访问语句网2内的靶机
@@ -78,6 +84,8 @@
 - 网关访问局域网2内靶机
 ![](./img/gw_dv2_ping.png)
 #### 4.靶机的所有对外上下行流量必须经过网关
+> 靶机对外上网需通过网关获取mac地址，再根据指定的ip地址进行转发包。
+
 - 靶机与互联网互通的过程中**用网关抓包，若靶机发送的所有包都能被网关抓到**，说明靶机的所有对外上下行流量必须经过网关。
     - 清空靶机ARP缓存及DNS缓存
     - 靶机与互联网互通：
@@ -89,6 +97,15 @@
 ![](./img/vic2_updown.png)
 
 2.利用tmux将抓包数据文件复制到主机用WireShark分析
+```
+# 安装tcpdump
+apt install tcpdump
+apt update && apt install tmux
+
+# 抓包
+cd workspace
+tcpdump -i enp0s9 -n -w 20210908.1.pcap
+```
 ![](./img/scp_2_mac.png)
 使用靶机访问**www.cuc.edu.cn** **www.baidu.com**，在文件中都能找到相应的包，说明靶机的所有对外上下行流量必须经过网关
 ![](./img/wireshark.png)
@@ -108,3 +125,7 @@
 - 问题1：在把网关的第一块网卡改为NAT网络时显示无效修改
 - 解决方法：VirtualBox控制 -> 设置 -> 网络,点击右侧加号标志就会出现NatNetwork选项，点击右下角OK完成设置。
 ![](./img/set_natnetwork.png) 
+
+## 参考文献
+- [Virtualbox网络连接方式选择NAT网络，无法指定界面名称的解决方法](https://blog.csdn.net/hexf9632/article/details/110197530)
+- [Linux tcpdump命令](https://www.runoob.com/linux/linux-comm-tcpdump.html)
