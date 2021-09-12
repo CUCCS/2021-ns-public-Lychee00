@@ -107,7 +107,7 @@ cd workspace
 tcpdump -i enp0s9 -n -w 20210908.1.pcap
 ```
 ![](./img/scp_2_mac.png)
-使用靶机访问**www.cuc.edu.cn** **www.baidu.com**，在文件中都能找到相应的包，说明靶机的所有对外上下行流量必须经过网关
+使用靶机访问**www.cuc.edu.cn**，**www.baidu.com**，在文件中都能找到相应的包，说明靶机的所有对外上下行流量必须经过网关
 ![](./img/wireshark.png)
 
 #### 5.所有节点均可以访问互联网
