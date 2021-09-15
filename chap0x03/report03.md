@@ -57,6 +57,7 @@ vim /etc/tinyproxy/tinyproxy.conf
     - 若在网关设置防火墙规则过滤攻击者主机（客户端）发出的的请求，则攻击者主机依然无法访问靶机端的HTTP服务
 
     - 代理层可以理解HTTP报文
+
 **3. 靶机**
 - 使用wireshark进行抓包分析，发现HTTP响应里含有Via: 1.1 tinyproxy (tinyproxy/1.10.0)字段
 ![](./img/vic_http_str.png)
